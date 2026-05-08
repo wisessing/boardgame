@@ -1,0 +1,203 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --ink: #e6e8ef;
+  --muted: #8a90a0;
+  --accent: #6ea8fe;
+  --hex: #2a2f3a;
+  --hex-fill: #1b1e26;
+  --edge-internal: #6ea8fe;
+  --edge-external: #f5a76b;
+  --node: #e6e8ef;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+header {
+  padding: 28px 32px 8px;
+  border-bottom: 1px solid #21252e;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 800px;
+  line-height: 1.5;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tab {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid #262b35;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tab:hover { border-color: #3a4151; }
+
+.tab.active {
+  background: var(--accent);
+  color: #0b0e13;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.count {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 6px 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  padding: 20px 32px 40px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid #262b35;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+}
+
+.export-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #262b35;
+  color: var(--ink);
+  border: 1px solid #333947;
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  font-family: inherit;
+  opacity: 0.55;
+  transition: opacity 0.12s, background 0.12s;
+}
+
+.card:hover .export-btn { opacity: 1; }
+.export-btn:hover { background: var(--accent); color: #0b0e13; border-color: var(--accent); }
+.export-btn:disabled { opacity: 0.4; cursor: progress; }
+
+.download-all {
+  margin-left: auto;
+}
+
+.card svg.polyhex {
+  width: 100%;
+  height: auto;
+  max-height: 220px;
+  display: block;
+}
+
+.label {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.hex-outline {
+  fill: var(--hex-fill);
+  stroke: var(--hex);
+  stroke-width: 1;
+}
+
+.edge {
+  stroke-linecap: round;
+}
+
+.edge.internal {
+  stroke: var(--edge-internal);
+  stroke-width: 2.4;
+}
+
+.edge.external {
+  stroke: var(--edge-external);
+  stroke-width: 2.4;
+  stroke-dasharray: 0;
+  opacity: 0.85;
+}
+
+.node {
+  fill: var(--node);
+  stroke: #0f1115;
+  stroke-width: 1;
+}
+
+/* Abstract graph view */
+
+.section-divider {
+  padding: 28px 32px 0;
+  border-top: 1px solid #21252e;
+  margin-top: 12px;
+}
+
+.section-divider h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.graph-edge {
+  stroke: #cdd2dd;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.graph-node {
+  fill: var(--accent);
+  stroke: #0f1115;
+  stroke-width: 1.5;
+}
+
+.graph-node-label {
+  fill: #0b0e13;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.degseq {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: #b6bccd;
+}

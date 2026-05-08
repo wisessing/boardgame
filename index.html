@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hex Tile Board — Polyhex Gallery</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Hex tile board · polyhex gallery</h1>
+      <p class="subtitle">
+        Each tile is a hex with a center node and 1–6 edges to its side midpoints.
+        Below: every connected arrangement of N tiles (free polyhexes, deduped under D<sub>6</sub> symmetry),
+        each rendered with the all-6-edges tile. Internal edges connect adjacent
+        centers through the shared side midpoint; external edges dangle.
+      </p>
+      <nav class="tabs">
+        <button class="tab active" data-n="3">N = 3 (3)</button>
+        <button class="tab" data-n="4">N = 4 (7)</button>
+        <button class="tab" data-n="5">N = 5 (22)</button>
+        <button id="download-all" class="tab download-all" type="button">Download all PNGs</button>
+      </nav>
+      <div id="count" class="count"></div>
+    </header>
+    <main id="gallery" class="gallery"></main>
+
+    <section class="section-divider">
+      <h2>Abstract graph (V, E)</h2>
+      <p class="subtitle">
+        Same shapes, drawn as the abstract graph: vertices = tile centers,
+        edges = adjacency between two tiles when both have an edge on the
+        shared side. Dangling (external) edges are omitted. Layout follows
+        the axial positions above so each graph lines up with its tile shape.
+      </p>
+    </section>
+    <main id="graph-gallery" class="gallery"></main>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
