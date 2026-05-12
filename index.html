@@ -19,22 +19,12 @@
         <button class="tab active" data-n="3">N = 3 (3)</button>
         <button class="tab" data-n="4">N = 4 (7)</button>
         <button class="tab" data-n="5">N = 5 (22)</button>
-        <button id="download-all" class="tab download-all" type="button">Download all PNGs</button>
+        <button class="tab" data-n="6">N = 6 (82)</button>
       </nav>
       <div id="count" class="count"></div>
+      <button id="show-grouped" class="tab" type="button">Show shapes grouped by graph</button>
     </header>
-    <main id="gallery" class="gallery"></main>
-
-    <section class="section-divider">
-      <h2>Abstract graph (V, E)</h2>
-      <p class="subtitle">
-        Same shapes, drawn as the abstract graph: vertices = tile centers,
-        edges = adjacency between two tiles when both have an edge on the
-        shared side. Dangling (external) edges are omitted. Layout follows
-        the axial positions above so each graph lines up with its tile shape.
-      </p>
-    </section>
-    <main id="graph-gallery" class="gallery"></main>
+    <main id="gallery"></main>
 
     <script type="module" src="main.js"></script>
   </body>

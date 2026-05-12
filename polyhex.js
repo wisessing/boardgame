@@ -1,6 +1,6 @@
 // Free polyhex enumeration — connected sets of N hex cells, deduped under the
 // 12-element dihedral hex symmetry group (rotations + reflections).
-// Counts: N=1:1, N=2:1, N=3:3, N=4:7, N=5:22.
+// Counts: N=1:1, N=2:1, N=3:3, N=4:7, N=5:22, N=6:82.
 
 import { NEIGHBORS, applySymmetry, normalize } from "./hex.js";
 
