@@ -2,20 +2,25 @@ import { enumeratePolyhexes } from "./polyhex.js";
 import { ALL_EDGES, buildGraph } from "./tile.js";
 import { renderPolyhex, renderAbstractGraph, degreeSequence } from "./render.js";
 
-const tabs = document.querySelectorAll(".tab[data-n]");
 const galleryEl = document.getElementById("gallery");
 const countEl = document.getElementById("count");
-const showBtn = document.getElementById("show-grouped");
+const timingEl = document.getElementById("timing");
 
-const shapeCache = new Map();
-function shapesFor(n) {
-  if (!shapeCache.has(n)) shapeCache.set(n, enumeratePolyhexes(n));
-  return shapeCache.get(n);
+const N = Number(document.body.dataset.n);
+if (!Number.isInteger(N) || N < 1) {
+  throw new Error(`Missing or invalid <body data-n="…">: got ${document.body.dataset.n}`);
+}
+
+function setTiming(parts) {
+  timingEl.textContent = parts
+    .filter((p) => p)
+    .map((p) => `${p.label}: ${p.ms.toFixed(1)} ms`)
+    .join("  ·  ");
 }
 
 // Brute-force graph isomorphism canonical form: lexicographically smallest
 // upper-triangular adjacency string over all vertex permutations. Fine for
-// n <= 6 (6! = 720 perms per graph).
+// n <= 7 (7! = 5040 perms per graph).
 function permutations(arr) {
   if (arr.length <= 1) return [arr.slice()];
   const out = [];
@@ -44,10 +49,7 @@ function canonicalForm(graph) {
   return `${n}:${best}`;
 }
 
-const groupCache = new Map();
-function groupsFor(n) {
-  if (groupCache.has(n)) return groupCache.get(n);
-  const shapes = shapesFor(n);
+function buildGroups(shapes) {
   const map = new Map();
   for (const cells of shapes) {
     const tiles = cells.map(() => ALL_EDGES);
@@ -56,12 +58,9 @@ function groupsFor(n) {
     if (!map.has(key)) map.set(key, []);
     map.get(key).push(cells);
   }
-  // Sort groups by descending member count, then by canonical key for stability.
-  const groups = Array.from(map.entries())
+  return Array.from(map.entries())
     .map(([key, members]) => ({ key, members }))
     .sort((a, b) => b.members.length - a.members.length || (a.key < b.key ? -1 : 1));
-  groupCache.set(n, groups);
-  return groups;
 }
 
 function renderGrouped(groups) {
@@ -70,7 +69,6 @@ function renderGrouped(groups) {
     const section = document.createElement("section");
     section.className = "group";
 
-    // Compute graph stats from the first representative.
     const repCells = group.members[0];
     const repTiles = repCells.map(() => ALL_EDGES);
     const repGraph = buildGraph(repCells, repTiles);
@@ -88,7 +86,6 @@ function renderGrouped(groups) {
     const row = document.createElement("div");
     row.className = "group-row";
 
-    // Graph card first.
     const graphRender = renderAbstractGraph({ cells: repCells, tiles: repTiles });
     const gcard = document.createElement("div");
     gcard.className = "card graph-card group-graph";
@@ -99,7 +96,6 @@ function renderGrouped(groups) {
     gcard.appendChild(glabel);
     row.appendChild(gcard);
 
-    // Then each polyhex that maps to this graph.
     group.members.forEach((cells, idx) => {
       const tiles = cells.map(() => ALL_EDGES);
       const tileRender = renderPolyhex({ cells, tiles });
@@ -121,59 +117,22 @@ function renderGrouped(groups) {
   });
 }
 
-// Bumped whenever the current N changes — used to cancel in-flight renders.
-let renderToken = 0;
-let currentN = null;
-let currentGroups = [];
-let currentShapeCount = 0;
-let shown = false;
-
-function showLabel() {
-  return `Show ${currentShapeCount} polyhex${currentShapeCount === 1 ? "" : "es"}` +
-    ` grouped by ${currentGroups.length} graph${currentGroups.length === 1 ? "" : "s"}`;
-}
-
-function showN(n) {
-  renderToken++;
-  currentN = n;
-  const shapes = shapesFor(n);
-  currentGroups = groupsFor(n);
-  currentShapeCount = shapes.length;
-  countEl.textContent =
-    `N = ${n} · ${shapes.length} polyhex${shapes.length === 1 ? "" : "es"}` +
-    ` · ${currentGroups.length} unique graph${currentGroups.length === 1 ? "" : "s"}`;
-  galleryEl.innerHTML = "";
-  shown = false;
-  showBtn.textContent = showLabel();
-  showBtn.disabled = false;
-}
-
-tabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    tabs.forEach((t) => t.classList.toggle("active", t === tab));
-    showN(Number(tab.dataset.n));
-  });
-});
-
-showBtn.addEventListener("click", () => {
-  if (shown) {
-    galleryEl.innerHTML = "";
-    shown = false;
-    showBtn.textContent = showLabel();
-    return;
-  }
-  const myToken = renderToken;
-  const groups = currentGroups;
-  showBtn.disabled = true;
-  showBtn.textContent = `Rendering N=${currentN}…`;
-  requestAnimationFrame(() => {
-    if (myToken !== renderToken) return;
-    renderGrouped(groups);
-    shown = true;
-    showBtn.disabled = false;
-    showBtn.textContent = "Hide";
-  });
-});
-
-// Default tab — set state but render nothing.
-showN(3);
+const t0 = performance.now();
+const shapes = enumeratePolyhexes(N);
+const t1 = performance.now();
+const groups = buildGroups(shapes);
+const t2 = performance.now();
+countEl.textContent =
+  `N = ${N} · ${shapes.length} polyhex${shapes.length === 1 ? "" : "es"}` +
+  ` · ${groups.length} unique graph${groups.length === 1 ? "" : "s"}`;
+renderGrouped(groups);
+const t3 = performance.now();
+void galleryEl.offsetHeight;
+const t4 = performance.now();
+setTiming([
+  { label: "enumerate", ms: t1 - t0 },
+  { label: "group", ms: t2 - t1 },
+  { label: "build DOM", ms: t3 - t2 },
+  { label: "layout", ms: t4 - t3 },
+  { label: "total", ms: t4 - t0 },
+]);

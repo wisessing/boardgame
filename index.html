@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hex Tile Board — Polyhex Gallery</title>
+    <title>Polyhex Gallery — Index</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -11,21 +11,34 @@
       <h1>Hex tile board · polyhex gallery</h1>
       <p class="subtitle">
         Each tile is a hex with a center node and 1–6 edges to its side midpoints.
-        Below: every connected arrangement of N tiles (free polyhexes, deduped under D<sub>6</sub> symmetry),
-        each rendered with the all-6-edges tile. Internal edges connect adjacent
-        centers through the shared side midpoint; external edges dangle.
+        For each size <em>N</em>, every connected arrangement of <em>N</em>
+        hex cells (free polyhex, deduped under D<sub>6</sub> symmetry) is
+        rendered with all 6 edges active. Polyhexes are grouped by the
+        abstract graph they induce — vertices = tile centers, edges =
+        adjacency between tiles. Pick a size below.
       </p>
-      <nav class="tabs">
-        <button class="tab active" data-n="3">N = 3 (3)</button>
-        <button class="tab" data-n="4">N = 4 (7)</button>
-        <button class="tab" data-n="5">N = 5 (22)</button>
-        <button class="tab" data-n="6">N = 6 (82)</button>
-      </nav>
-      <div id="count" class="count"></div>
-      <button id="show-grouped" class="tab" type="button">Show shapes grouped by graph</button>
     </header>
-    <main id="gallery"></main>
-
-    <script type="module" src="main.js"></script>
+    <main class="index-list">
+      <a href="n3.html" class="index-item">
+        <span class="index-n">N = 3</span>
+        <span class="index-info">3 polyhexes · 2 unique graphs</span>
+      </a>
+      <a href="n4.html" class="index-item">
+        <span class="index-n">N = 4</span>
+        <span class="index-info">7 polyhexes · 4 unique graphs</span>
+      </a>
+      <a href="n5.html" class="index-item">
+        <span class="index-n">N = 5</span>
+        <span class="index-info">22 polyhexes · 8 unique graphs</span>
+      </a>
+      <a href="n6.html" class="index-item">
+        <span class="index-n">N = 6</span>
+        <span class="index-info">82 polyhexes · 22 unique graphs</span>
+      </a>
+      <a href="n7.html" class="index-item">
+        <span class="index-n">N = 7</span>
+        <span class="index-info">333 polyhexes · 54 unique graphs</span>
+      </a>
+    </main>
   </body>
 </html>
