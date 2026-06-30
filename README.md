@@ -1,10 +1,10 @@
 # Board Game / Polyhex Experiment
 
-This repository appears to be an experiment around placing hex tiles on a hex grid and studying which connected shapes are possible under a fairly strict local rule. It is not a full game implementation with turns, scoring, or win conditions. The code focuses on enumerating valid tile layouts, verifying the counts with independent solvers, and rendering the results as a small browser gallery.
+This repository studies hex-tile placements on a hex grid under a strict local rule. It is not a full game implementation with turns, scoring, or win conditions. The code enumerates valid tile layouts, verifies the counts with independent solvers, and renders the results as a small browser gallery.
 
-## What the project is trying to do
+## Project scope
 
-From the code, the intended object is a connected set of `N` hex cells, usually called a polyhex.
+The core object is a connected set of `N` hex cells, usually called a polyhex.
 
 The rule implemented throughout the repo is:
 
@@ -20,7 +20,7 @@ The browser pages then group valid shapes by the abstract adjacency graph induce
 - Vertices = tile centers.
 - Edges = two tiles touching along a side.
 
-## Main findings currently encoded in the repo
+## Main findings
 
 The gallery and verification files agree on these counts of valid polyhexes:
 
@@ -39,7 +39,7 @@ The gallery and verification files agree on these counts of valid polyhexes:
 | 17 | 38 | 33 |
 | 18 | 90 | 76 |
 
-The smallest non-empty case is `N = 7`, which the site describes as the centered hex flower.
+The smallest non-empty case is `N = 7`, the centered hex flower.
 
 ## How the repo is organized
 
@@ -106,13 +106,13 @@ This builds `polyhex_brute.cu` with `nvcc`, runs the GPU verifier, and writes `v
 
 ## Important caveat
 
-If the original intent was a playable board game, the actual gameplay rules are not present here. What is clearly implemented is a search problem:
+This repository does not contain gameplay rules for a playable board game. It implements a search problem:
 
 - place up to `N` hex tiles,
 - keep the shape connected,
 - require each placed tile to touch at least 3 others,
 - and study the resulting unique shapes and their adjacency graphs.
 
-So the most accurate short description is:
+The most accurate short description is:
 
 > A polyhex enumeration and visualization project for connected hex-tile layouts where every tile has degree at least 3.
