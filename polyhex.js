@@ -1,8 +1,29 @@
-// Free polyhex enumeration — connected sets of N hex cells, deduped under the
-// 12-element dihedral hex symmetry group (rotations + reflections).
-// Counts: N=1:1, N=2:1, N=3:3, N=4:7, N=5:22, N=6:82.
+// Free polyhex enumeration — connected sets of N hex cells in which every
+// cell shares an edge with at least 3 other cells in the set; deduped
+// under the 12-element dihedral hex symmetry group (rotations + reflections).
+//
+// Strategy: level-wise BFS with per-level dedup by canonical D6 key. This
+// avoids the N! blow-up of "any DFS path from a seed cell" and makes N=12
+// tractable.
+// Counts (degree>=3): N=7:1, N=8..9:0, N=10:1, N=11:0, N=12:3.
 
 import { NEIGHBORS, applySymmetry, normalize } from "./hex.js";
+
+const MIN_DEGREE = 3;
+
+function everyCellHasMinDegree(cells, cellSet) {
+  for (const [q, r] of cells) {
+    let count = 0;
+    for (const [dq, dr] of NEIGHBORS) {
+      if (cellSet.has(`${q + dq},${r + dr}`)) {
+        count++;
+        if (count >= MIN_DEGREE) break;
+      }
+    }
+    if (count < MIN_DEGREE) return false;
+  }
+  return true;
+}
 
 function canonicalKey(cells) {
   let best = null;
@@ -17,42 +38,42 @@ function canonicalKey(cells) {
   return best;
 }
 
+// Enumerate all free polyhexes of size exactly n, then apply the degree filter.
+// Builds size 1 -> 2 -> ... -> n, deduping at each level via canonical key.
 export function enumeratePolyhexes(n) {
   if (n < 1) return [];
-  const seen = new Set();
-  const results = [];
 
-  const cells = [[0, 0]];
-  const cellSet = new Set(["0,0"]);
+  let current = [normalize([[0, 0]])];
 
-  function grow() {
-    if (cells.length === n) {
-      const k = canonicalKey(cells);
-      if (!seen.has(k)) {
-        seen.add(k);
-        results.push(normalize(cells.map(([q, r]) => [q, r])));
+  for (let k = 1; k < n; k++) {
+    const seen = new Set();
+    const next = [];
+    for (const cells of current) {
+      const cellKeys = new Set();
+      for (const [q, r] of cells) cellKeys.add(`${q},${r}`);
+      const frontier = new Set();
+      for (const [q, r] of cells) {
+        for (const [dq, dr] of NEIGHBORS) {
+          const fk = `${q + dq},${r + dr}`;
+          if (!cellKeys.has(fk)) frontier.add(fk);
+        }
       }
-      return;
-    }
-    // Frontier: all empty neighbors of current cells.
-    const frontier = new Set();
-    for (const [q, r] of cells) {
-      for (const [dq, dr] of NEIGHBORS) {
-        const nq = q + dq, nr = r + dr;
-        const k = `${nq},${nr}`;
-        if (!cellSet.has(k)) frontier.add(k);
+      for (const fk of frontier) {
+        const [nq, nr] = fk.split(",").map(Number);
+        const newCells = cells.concat([[nq, nr]]);
+        const key = canonicalKey(newCells);
+        if (!seen.has(key)) {
+          seen.add(key);
+          next.push(normalize(newCells));
+        }
       }
     }
-    for (const f of frontier) {
-      const [nq, nr] = f.split(",").map(Number);
-      cells.push([nq, nr]);
-      cellSet.add(f);
-      grow();
-      cells.pop();
-      cellSet.delete(f);
-    }
+    current = next;
   }
 
-  grow();
-  return results;
+  return current.filter((cells) => {
+    const cellSet = new Set();
+    for (const [q, r] of cells) cellSet.add(`${q},${r}`);
+    return everyCellHasMinDegree(cells, cellSet);
+  });
 }

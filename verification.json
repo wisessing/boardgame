@@ -1,0 +1,81 @@
+{
+  "source": "polyhex_brute.cu (GPU level-wise BFS, D6 dedup, deg>=3 filter at leaf)",
+  "max_n": 15,
+  "counts": {
+    "1": {
+      "total_polyhexes": 1,
+      "valid_polyhexes": 0,
+      "ms": 0
+    },
+    "2": {
+      "total_polyhexes": 1,
+      "valid_polyhexes": 0,
+      "ms": 0
+    },
+    "3": {
+      "total_polyhexes": 3,
+      "valid_polyhexes": 0,
+      "ms": 0
+    },
+    "4": {
+      "total_polyhexes": 7,
+      "valid_polyhexes": 0,
+      "ms": 0
+    },
+    "5": {
+      "total_polyhexes": 22,
+      "valid_polyhexes": 0,
+      "ms": 1
+    },
+    "6": {
+      "total_polyhexes": 82,
+      "valid_polyhexes": 0,
+      "ms": 2
+    },
+    "7": {
+      "total_polyhexes": 333,
+      "valid_polyhexes": 1,
+      "ms": 2
+    },
+    "8": {
+      "total_polyhexes": 1448,
+      "valid_polyhexes": 0,
+      "ms": 1
+    },
+    "9": {
+      "total_polyhexes": 6572,
+      "valid_polyhexes": 0,
+      "ms": 4
+    },
+    "10": {
+      "total_polyhexes": 30490,
+      "valid_polyhexes": 1,
+      "ms": 21
+    },
+    "11": {
+      "total_polyhexes": 143552,
+      "valid_polyhexes": 0,
+      "ms": 121
+    },
+    "12": {
+      "total_polyhexes": 683101,
+      "valid_polyhexes": 3,
+      "ms": 1018
+    },
+    "13": {
+      "total_polyhexes": 3274826,
+      "valid_polyhexes": 2,
+      "ms": 6241
+    },
+    "14": {
+      "total_polyhexes": 15796897,
+      "valid_polyhexes": 4,
+      "ms": 34857
+    },
+    "15": {
+      "total_polyhexes": 76581875,
+      "valid_polyhexes": 10,
+      "ms": 212944
+    }
+  }
+}

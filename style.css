@@ -133,11 +133,47 @@ h1 {
   min-height: 14px;
 }
 
+.verify {
+  font-size: 11px;
+  padding: 4px 8px;
+  margin: 4px 0 0;
+  display: inline-block;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.verify.ok {
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+}
+
+.verify.mismatch {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  font-weight: 600;
+}
+
+.verify.unverified {
+  color: var(--muted);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+}
+
 #gallery {
   padding: 20px 32px 40px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.empty-note {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+  max-width: 640px;
+  margin: 8px 0 0;
 }
 
 .group {

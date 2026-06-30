@@ -1,0 +1,78 @@
+{
+  "source": "polyhex_cpsat.py (OR-Tools CP-SAT, hex disk r=7, origin-pinned, post-connectivity, D6 dedup)",
+  "max_n": 18,
+  "counts": {
+    "7": {
+      "valid_polyhexes": 1,
+      "raw_solutions": 1,
+      "connected_solutions": 1,
+      "ms": 4
+    },
+    "8": {
+      "valid_polyhexes": 0,
+      "raw_solutions": 0,
+      "connected_solutions": 0,
+      "ms": 3
+    },
+    "9": {
+      "valid_polyhexes": 0,
+      "raw_solutions": 0,
+      "connected_solutions": 0,
+      "ms": 4
+    },
+    "10": {
+      "valid_polyhexes": 1,
+      "raw_solutions": 3,
+      "connected_solutions": 3,
+      "ms": 5
+    },
+    "11": {
+      "valid_polyhexes": 0,
+      "raw_solutions": 0,
+      "connected_solutions": 0,
+      "ms": 7
+    },
+    "12": {
+      "valid_polyhexes": 3,
+      "raw_solutions": 8,
+      "connected_solutions": 8,
+      "ms": 13
+    },
+    "13": {
+      "valid_polyhexes": 2,
+      "raw_solutions": 9,
+      "connected_solutions": 9,
+      "ms": 18
+    },
+    "14": {
+      "valid_polyhexes": 4,
+      "raw_solutions": 56,
+      "connected_solutions": 24,
+      "ms": 46
+    },
+    "15": {
+      "valid_polyhexes": 10,
+      "raw_solutions": 73,
+      "connected_solutions": 73,
+      "ms": 61
+    },
+    "16": {
+      "valid_polyhexes": 19,
+      "raw_solutions": 140,
+      "connected_solutions": 140,
+      "ms": 149
+    },
+    "17": {
+      "valid_polyhexes": 38,
+      "raw_solutions": 505,
+      "connected_solutions": 363,
+      "ms": 283
+    },
+    "18": {
+      "valid_polyhexes": 90,
+      "raw_solutions": 822,
+      "connected_solutions": 822,
+      "ms": 552
+    }
+  }
+}

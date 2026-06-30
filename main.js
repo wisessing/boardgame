@@ -1,10 +1,11 @@
-import { enumeratePolyhexes } from "./polyhex.js";
+import { POLYHEX_DATA } from "./polyhex-data.js";
 import { ALL_EDGES, buildGraph } from "./tile.js";
 import { renderPolyhex, renderAbstractGraph, degreeSequence } from "./render.js";
 
 const galleryEl = document.getElementById("gallery");
 const countEl = document.getElementById("count");
 const timingEl = document.getElementById("timing");
+const verifyEl = document.getElementById("verify");
 
 const N = Number(document.body.dataset.n);
 if (!Number.isInteger(N) || N < 1) {
@@ -18,53 +19,32 @@ function setTiming(parts) {
     .join("  ·  ");
 }
 
-// Brute-force graph isomorphism canonical form: lexicographically smallest
-// upper-triangular adjacency string over all vertex permutations. Fine for
-// n <= 7 (7! = 5040 perms per graph).
-function permutations(arr) {
-  if (arr.length <= 1) return [arr.slice()];
-  const out = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = arr.slice(0, i).concat(arr.slice(i + 1));
-    for (const p of permutations(rest)) out.push([arr[i], ...p]);
-  }
-  return out;
-}
-
-function canonicalForm(graph) {
-  const n = graph.nodes.length;
-  const adj = Array.from({ length: n }, () => new Array(n).fill(0));
-  for (const e of graph.internalEdges) {
-    adj[e.a][e.b] = 1;
-    adj[e.b][e.a] = 1;
-  }
-  const idx = Array.from({ length: n }, (_, i) => i);
-  let best = null;
-  for (const p of permutations(idx)) {
-    let s = "";
-    for (let i = 0; i < n; i++)
-      for (let j = i + 1; j < n; j++) s += adj[p[i]][p[j]];
-    if (best === null || s < best) best = s;
-  }
-  return `${n}:${best}`;
-}
-
-function buildGroups(shapes) {
+// Group polyhexes by VF2-derived label (precomputed offline in
+// polyhex-groups.json — see verify_groups.py). WL refinement was
+// incomplete at N >= 15 and was collapsing non-isomorphic graphs.
+function buildGroupsFromLabels(shapes, labels) {
   const map = new Map();
-  for (const cells of shapes) {
-    const tiles = cells.map(() => ALL_EDGES);
-    const graph = buildGraph(cells, tiles);
-    const key = canonicalForm(graph);
+  for (let i = 0; i < shapes.length; i++) {
+    const key = labels[i] ?? `solo-${i}`;
     if (!map.has(key)) map.set(key, []);
-    map.get(key).push(cells);
+    map.get(key).push(shapes[i]);
   }
   return Array.from(map.entries())
     .map(([key, members]) => ({ key, members }))
-    .sort((a, b) => b.members.length - a.members.length || (a.key < b.key ? -1 : 1));
+    .sort((a, b) => b.members.length - a.members.length || a.key - b.key);
 }
 
 function renderGrouped(groups) {
   galleryEl.innerHTML = "";
+  if (groups.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-note";
+    empty.textContent =
+      `No polyhex of size ${N} satisfies the rule (every cell shares ` +
+      `an edge with at least 3 others in the set).`;
+    galleryEl.appendChild(empty);
+    return;
+  }
   groups.forEach((group, gIdx) => {
     const section = document.createElement("section");
     section.className = "group";
@@ -117,22 +97,62 @@ function renderGrouped(groups) {
   });
 }
 
+const shapes = POLYHEX_DATA[N] || [];
+
+// Load precomputed VF2 group labels.
+const groupLabelsByN = await fetch("polyhex-groups.json").then((r) => r.json());
+const myLabels = groupLabelsByN[String(N)]?.labels ?? shapes.map((_, i) => i);
+
 const t0 = performance.now();
-const shapes = enumeratePolyhexes(N);
+const groups = buildGroupsFromLabels(shapes, myLabels);
 const t1 = performance.now();
-const groups = buildGroups(shapes);
-const t2 = performance.now();
 countEl.textContent =
   `N = ${N} · ${shapes.length} polyhex${shapes.length === 1 ? "" : "es"}` +
   ` · ${groups.length} unique graph${groups.length === 1 ? "" : "s"}`;
 renderGrouped(groups);
-const t3 = performance.now();
+const t2 = performance.now();
 void galleryEl.offsetHeight;
-const t4 = performance.now();
+const t3 = performance.now();
 setTiming([
-  { label: "enumerate", ms: t1 - t0 },
-  { label: "group", ms: t2 - t1 },
-  { label: "build DOM", ms: t3 - t2 },
-  { label: "layout", ms: t4 - t3 },
-  { label: "total", ms: t4 - t0 },
+  { label: "group", ms: t1 - t0 },
+  { label: "build DOM", ms: t2 - t1 },
+  { label: "layout", ms: t3 - t2 },
+  { label: "total", ms: t3 - t0 },
 ]);
+
+// Fetch independent verifications (GPU brute force + CP-SAT) and decorate
+// the count line. Each verifier covers a different N range, so we report
+// every source that has a number for the current N.
+if (verifyEl) {
+  Promise.all([
+    fetch("verification.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    fetch("verification-cpsat.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
+  ]).then(([gpu, cpsat]) => {
+    const lines = [];
+    let anyMismatch = false;
+    let anyOk = false;
+    const check = (label, src) => {
+      if (!src || !src.counts) return;
+      const row = src.counts[String(N)];
+      if (!row) return;
+      const v = row.valid_polyhexes;
+      const ok = v === shapes.length;
+      if (ok) anyOk = true; else anyMismatch = true;
+      lines.push(
+        ok
+          ? `✓ ${label}: ${v} valid`
+          : `✗ ${label} MISMATCH: ${v} vs smart ${shapes.length}`,
+      );
+    };
+    check("GPU brute force", gpu);
+    check("CP-SAT", cpsat);
+    if (lines.length === 0) {
+      verifyEl.textContent = "not independently verified";
+      verifyEl.className = "verify unverified";
+    } else {
+      verifyEl.textContent = lines.join("  ·  ");
+      verifyEl.className =
+        "verify " + (anyMismatch ? "mismatch" : "ok");
+    }
+  });
+}
